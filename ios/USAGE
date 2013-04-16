@@ -1,0 +1,8 @@
+Description:
+    Creates a Phonegap iOS app
+
+Example:
+    yo phonegap:ios
+
+    This will create:
+        mobile/ios

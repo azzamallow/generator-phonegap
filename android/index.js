@@ -12,10 +12,7 @@ function Generator() {
 
 util.inherits(Generator, yeoman.generators.Base);
 
-Generator.prototype.setupEnv = function setupEnv() {
-  // Copies the contents of the generator `templates`
-  // directory into your users new application path
-  this.sourceRoot(path.join(__dirname, '../templates/common'));
+Generator.prototype.createFiles = function createFiles() {
+  this.sourceRoot(path.join(__dirname, '../templates/android'));
   this.directory('root', '.', true);
-  this.copy('gitignore', '.gitignore');
 };

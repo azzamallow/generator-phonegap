@@ -1,0 +1,8 @@
+Description:
+    Creates a Phonegap Android app
+
+Example:
+    yo phonegap:android
+
+    This will create:
+        mobile/android
