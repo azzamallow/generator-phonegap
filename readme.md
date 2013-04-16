@@ -18,7 +18,7 @@ mkdir my-new-project && cd $_
 
 Generate
 ```
-yo phonegap
+yo phonegap:ios
 ```
 
 ## License
