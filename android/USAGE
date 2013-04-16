@@ -2,7 +2,7 @@ Description:
     Creates a Phonegap Android app
 
 Example:
-    yo phonegap:android
+    yo phonegap:android com.example.cordova_project_name
 
     This will create:
         mobile/android

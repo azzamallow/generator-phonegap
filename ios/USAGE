@@ -2,7 +2,7 @@ Description:
     Creates a Phonegap iOS app
 
 Example:
-    yo phonegap:ios
+    yo phonegap:ios com.example.cordova_project_name
 
     This will create:
         mobile/ios
