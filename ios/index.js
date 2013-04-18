@@ -4,6 +4,7 @@ var util = require('util');
 var yeoman = require('yeoman-generator');
 var downloader = require('downloader');
 var AdmZip = require('adm-zip');
+var color = require("ansi-color").set;
 
 var sys = require('sys')
 var fs = require('fs')
@@ -40,57 +41,62 @@ Generator.prototype.askFor = function askFor() {
 };
 
 Generator.prototype.downloadPhonegap = function downloadPhonegap() {
-
+  var self = this;
   var unzip = function () {
     if (fs.existsSync("/tmp/phonegap-2.6.0/")) {
-      console.log('already extracted');
+      generateApp.call(self);
       return;
     }
+
+    console.log('generator-phonegap', color("Extracting...", "green"));
     var zip = new AdmZip("/tmp/phonegap-2.6.0.zip");
     zip.extractAllTo("/tmp", true);
     fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/create', '0766');
     fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/replaces', '0766');
-    fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/update_cordova_subprojec', '0766');
+    fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/update_cordova_subproject', '0766');
+    generateApp.call(self);
   };
 
   var downloadDir = '/tmp/';
 
   downloader.on('done', function(msg) {
-    console.log('generator-phonegap extracting phonegap...');
     unzip();
   });
 
   downloader.on('error', function(msg) {
-    console.log(msg);
+    console.log('generator-phonegap', color(msg.replace(/(.*)\n/g, '$1'), "red"));
   });
 
   if (fs.existsSync("/tmp/phonegap-2.6.0.zip")) {
-    console.log('already downloaded');
     unzip();
     return;
   }
 
-  console.log('generator-phonegap http GET https://s3.amazonaws.com/phonegap.download/phonegap-2.6.0.zip');
+  console.log('generator-phonegap', color("http", "green"), color("GET", "magenta"), "https://s3.amazonaws.com/phonegap.download/phonegap-2.6.0.zip");
   downloader.download("https://s3.amazonaws.com/phonegap.download/phonegap-2.6.0.zip", downloadDir);
 };
 
-Generator.prototype.generateApp = function generateApp() {
-  function puts(error, stdout, stderr) { 
+var generateApp = function() {
+  function callback(error, stdout, stderr) { 
     if (error) {
-      sys.puts(stdout); 
-      sys.puts(stderr); 
-      sys.puts(error); 
+      if (stdout !== undefined && stdout !== null && stdout !== '') {
+        console.log('generator-phonegap', color(stdout.replace(/(.*)\n/g, '$1'), "red"));
+      }
+
+      if (stderr !== undefined && stderr !== null && stderr !== '') {
+        console.log('generator-phonegap', color(stderr.replace(/(.*)\n/g, '$1'), "red"));
+      }
     } else {
-      sys.puts('Success!'); 
+      console.log('generator-phonegap', color("Done!", "green"));
     }
   }
 
-  console.log('creating phonegap app');
+  console.log('generator-phonegap', color("Creating...", "green"));
   if (!fs.existsSync('./mobile')) {
     fs.mkdirSync('./mobile');
   }
   if (!fs.existsSync('./mobile/ios')) {
     fs.mkdirSync('./mobile/ios');
   }
-  exec('/tmp/phonegap-2.6.0/lib/ios/bin/create ./mobile/ios/ ' + this.packageName + ' ' + this.appname, puts);
+  exec('/tmp/phonegap-2.6.0/lib/ios/bin/create mobile/ios/ ' + this.packageName + ' ' + this.appname, callback);
 };
