@@ -51,7 +51,6 @@ Generator.prototype.downloadPhonegap = function downloadPhonegap() {
     fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/create', '0766');
     fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/replaces', '0766');
     fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/update_cordova_subprojec', '0766');
-    update_cordova_subprojec
   };
 
   var downloadDir = '/tmp/';
