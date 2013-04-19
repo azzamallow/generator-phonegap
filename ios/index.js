@@ -1,14 +1,16 @@
 'use strict';
+
 var path = require('path');
 var util = require('util');
 var yeoman = require('yeoman-generator');
-var downloader = require('downloader');
-var AdmZip = require('adm-zip');
 var color = require("ansi-color").set;
 
-var sys = require('sys')
-var fs = require('fs')
+var sys = require('sys');
+var fs = require('fs');
 var exec = require('child_process').exec;
+
+var phonegapDownloader = require('../phonegap-downloader.js');
+var logger = require('../logger.js');
 
 module.exports = Generator;
 
@@ -40,58 +42,32 @@ Generator.prototype.askFor = function askFor() {
   }.bind(this));
 };
 
-Generator.prototype.downloadPhonegap = function downloadPhonegap() {
+Generator.prototype.morestuff = function morestuff() {
   var self = this;
-  var unzip = function () {
-    if (fs.existsSync("/tmp/phonegap-2.6.0/")) {
-      generateApp.call(self);
-      return;
-    }
-
-    console.log('generator-phonegap', color("Extracting...", "green"));
-    var zip = new AdmZip("/tmp/phonegap-2.6.0.zip");
-    zip.extractAllTo("/tmp", true);
-    fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/create', '0766');
-    fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/replaces', '0766');
-    fs.chmodSync('/tmp/phonegap-2.6.0/lib/ios/bin/update_cordova_subproject', '0766');
+  logger.log(color("http", "green"), color("GET", "magenta"), "https://s3.amazonaws.com/phonegap.download/phonegap-2.6.0.zip");
+  function success() {
     generateApp.call(self);
-  };
-
-  var downloadDir = '/tmp/';
-
-  downloader.on('done', function(msg) {
-    unzip();
-  });
-
-  downloader.on('error', function(msg) {
-    console.log('generator-phonegap', color(msg.replace(/(.*)\n/g, '$1'), "red"));
-  });
-
-  if (fs.existsSync("/tmp/phonegap-2.6.0.zip")) {
-    unzip();
-    return;
   }
-
-  console.log('generator-phonegap', color("http", "green"), color("GET", "magenta"), "https://s3.amazonaws.com/phonegap.download/phonegap-2.6.0.zip");
-  downloader.download("https://s3.amazonaws.com/phonegap.download/phonegap-2.6.0.zip", downloadDir);
-};
+  phonegapDownloader.download(success, logger.error);
+}
 
 var generateApp = function() {
-  function callback(error, stdout, stderr) { 
+  function callback(error, stdout, stderr) {
     if (error) {
       if (stdout !== undefined && stdout !== null && stdout !== '') {
-        console.log('generator-phonegap', color(stdout.replace(/(.*)\n/g, '$1'), "red"));
+        logger.error(stdout);
       }
 
       if (stderr !== undefined && stderr !== null && stderr !== '') {
-        console.log('generator-phonegap', color(stderr.replace(/(.*)\n/g, '$1'), "red"));
+        logger.error(stderr);
       }
     } else {
-      console.log('generator-phonegap', color("Done!", "green"));
+      logger.info('Done!');
     }
   }
 
-  console.log('generator-phonegap', color("Creating...", "green"));
+  logger.info('Creating...');
+
   if (!fs.existsSync('./mobile')) {
     fs.mkdirSync('./mobile');
   }
