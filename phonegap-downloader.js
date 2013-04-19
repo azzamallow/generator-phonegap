@@ -26,7 +26,7 @@ function download(success, error) {
 }
 
 function fetch(success, error) {
-  if (fs.existsSync(zipFile)) {
+  if (fs.existsSync(downloadDir + zipFile)) {
     success();
     return;
   }
