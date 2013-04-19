@@ -44,7 +44,6 @@ Generator.prototype.askFor = function askFor() {
 
 Generator.prototype.morestuff = function morestuff() {
   var self = this;
-  logger.log(color("http", "green"), color("GET", "magenta"), "https://s3.amazonaws.com/phonegap.download/phonegap-2.6.0.zip");
   function success() {
     generateApp.call(self);
   }
