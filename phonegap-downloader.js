@@ -15,28 +15,28 @@ module.exports = {
   download: download
 };
 
-function download(success, error) {
+function download(success) {
   logger.log(color("http", "green"), color("GET", "magenta"), url);
 
   fetch(function () {
     unzip(function () {
       success();
-    }, error);
-  }, error);
+    });
+  });
 }
 
-function fetch(success, error) {
+function fetch(success) {
   if (fs.existsSync(downloadDir + zipFile)) {
     success();
     return;
   }
 
   downloader.on('done', success);
-  downloader.on('error', error);
+  downloader.on('error', logger.error);
   downloader.download(url, downloadDir);
 }
 
-function unzip(success, error) {
+function unzip(success) {
   if (fs.existsSync(downloadDir + phonegap)) {
     success();
     return;
